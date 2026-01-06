@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Minecraft Clone</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #87CEEB; font-family: 'Segoe UI', sans-serif; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 12px; height: 12px; border: 2px solid white;
+            transform: translate(-50%, -50%); pointer-events: none; z-index: 5;
+        }
+        #menu {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white; z-index: 10;
+        }
+        .btn {
+            padding: 15px 40px; margin: 10px; font-size: 20px; cursor: pointer;
+            background: #4d7833; border: 4px solid #2d4d1d; color: white; font-weight: bold;
+        }
+        .btn:hover { background: #5a8c3d; }
+        #ui {
+            position: absolute; top: 10px; left: 10px;
+            color: white; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 4px; pointer-events: none;
+        }
+        #hotbar {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 5px;
+        }
+        .slot { width: 50px; height: 50px; margin: 0 5px; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; text-align: center; }
+        .slot.active { border-color: white; background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <div id="crosshair"></div>
+    <div id="menu">
+        <h1>MINECRAFT CLONE</h1>
+        <button class="btn" onclick="startGame('survival')">SURVIVAL MODE</button>
+        <button class="btn" onclick="startGame('creative')">CREATIVE MODE</button>
+        <p>WASD: Move | Space: Jump/Fly | Shift: Descend (Creative) | 1-5: Blocks</p>
+    </div>
+    <div id="ui">
+        <b>Mode:</b> <span id="modeDisplay">None</span><br>
+        <b>L-Click</b>: Place | <b>R-Click</b>: Remove
+    </div>
+    <div id="hotbar">
+        <div class="slot active" id="slot1">1<br>Grass</div>
+        <div class="slot" id="slot2">2<br>Dirt</div>
+        <div class="slot" id="slot3">3<br>Stone</div>
+        <div class="slot" id="slot4">4<br>Wood</div>
+        <div class="slot" id="slot5">5<br>Glass</div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+        let gameMode = 'survival';
+        const worldBlocks = new Map();
+        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        let selectedBlock = 'grass';
+        const blockTypes = ['grass', 'dirt', 'stone', 'wood', 'glass'];
+
+        const mats = {
+            grass: new THREE.MeshStandardMaterial({ color: 0x4d7833 }),
+            dirt: new THREE.MeshStandardMaterial({ color: 0x6b4226 }),
+            stone: new THREE.MeshStandardMaterial({ color: 0x808080 }),
+            wood: new THREE.MeshStandardMaterial({ color: 0x5d4037 }),
+            glass: new THREE.MeshStandardMaterial({ color: 0xadd8e6, transparent: true, opacity: 0.6 })
+        };
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.Fog(0x87CEEB, 1, 60);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new PointerLockControls(camera, document.body);
+        
+        window.startGame = (mode) => {
+            gameMode = mode;
+            document.getElementById('modeDisplay').innerText = mode.toUpperCase();
+            document.getElementById('menu').style.display = 'none';
+            controls.lock();
+            if(mode === 'survival') camera.position.y = 10; 
+        };
+
+        controls.addEventListener('unlock', () => {
+            document.getElementById('menu').style.display = 'flex';
+        });
+
+        function spawnBlock(x, y, z, type) {
+            const mesh = new THREE.Mesh(boxGeo, mats[type]);
+            mesh.position.set(Math.round(x), Math.round(y), Math.round(z));
+            scene.add(mesh);
+            worldBlocks.set(`${mesh.position.x},${mesh.position.y},${mesh.position.z}`, mesh);
+        }
+
+        // Generate starting terrain
+        for(let x = -15; x < 15; x++) {
+            for(let z = -15; z < 15; z++) {
+                const h = Math.floor(Math.sin(x/5)*2 + Math.cos(z/5)*2);
+                spawnBlock(x, h, z, 'grass');
+                spawnBlock(x, h-1, z, 'dirt');
+            }
+        }
+
+        const moveState = { forward: false, backward: false, left: false, right: false, jump: false, shift: false };
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyW') moveState.forward = true;
+            if (e.code === 'KeyS') moveState.backward = true;
+            if (e.code === 'KeyA') moveState.left = true;
+            if (e.code === 'KeyD') moveState.right = true;
+            if (e.code === 'Space') moveState.jump = true;
+            if (e.code === 'ShiftLeft') moveState.shift = true;
+            
+            if (e.key >= '1' && e.key <= '5') {
+                selectedBlock = blockTypes[parseInt(e.key) - 1];
+                document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+                document.getElementById('slot' + e.key).classList.add('active');
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyW') moveState.forward = false;
+            if (e.code === 'KeyS') moveState.backward = false;
+            if (e.code === 'KeyA') moveState.left = false;
+            if (e.code === 'KeyD') moveState.right = false;
+            if (e.code === 'Space') moveState.jump = false;
+            if (e.code === 'ShiftLeft') moveState.shift = false;
+        });
+
+        const raycaster = new THREE.Raycaster();
+        document.addEventListener('mousedown', (e) => {
+            if (!controls.isLocked) return;
+            raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+            const hits = raycaster.intersectObjects(Array.from(worldBlocks.values()));
+            if (hits.length > 0) {
+                const hit = hits[0];
+                if (e.button === 0) { // Place
+                    const p = hit.object.position.clone().add(hit.face.normal);
+                    spawnBlock(p.x, p.y, p.z, selectedBlock);
+                } else if (e.button === 2) { // Remove
+                    scene.remove(hit.object);
+                    worldBlocks.delete(`${hit.object.position.x},${hit.object.position.y},${hit.object.position.z}`);
+                }
+            }
+        });
+        window.oncontextmenu = (e) => e.preventDefault();
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+        sun.position.set(5, 15, 5);
+        scene.add(sun);
+
+        let velY = 0;
+        let canJump = false;
+        const clock = new THREE.Clock();
+        const PLAYER_HEIGHT = 1.6;
+
+        function checkSideCollision(pos) {
+            // Check at knee and eye level
+            const levels = [-1.0, 0.0];
+            for(let dy of levels) {
+                const key = `${Math.round(pos.x)},${Math.round(pos.y + dy)},${Math.round(pos.z)}`;
+                if(worldBlocks.has(key)) return true;
+            }
+            return false;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (!controls.isLocked) return;
+
+            const delta = Math.min(clock.getDelta(), 0.1);
+            const speed = gameMode === 'creative' ? 12.0 : 6.0;
+            const oldPos = camera.position.clone();
+
+            // Horizontal
+            if (moveState.forward) controls.moveForward(speed * delta);
+            if (moveState.backward) controls.moveForward(-speed * delta);
+            if (moveState.left) controls.moveRight(-speed * delta);
+            if (moveState.right) controls.moveRight(speed * delta);
+
+            // Side Collisions
+            if (gameMode === 'survival' && checkSideCollision(camera.position)) {
+                camera.position.x = oldPos.x;
+                camera.position.z = oldPos.z;
+            }
+
+            // Vertical
+            if (gameMode === 'survival') {
+                velY -= 28.0 * delta; // Gravity
+                camera.position.y += velY * delta;
+
+                const px = Math.round(camera.position.x);
+                const pz = Math.round(camera.position.z);
+                const py = Math.floor(camera.position.y - PLAYER_HEIGHT);
+
+                // Land only if falling
+                if (velY <= 0 && worldBlocks.has(`${px},${py},${pz}`)) {
+                    camera.position.y = py + PLAYER_HEIGHT + 0.5;
+                    velY = 0;
+                    canJump = true;
+                } else {
+                    canJump = false;
+                }
+
+                if (moveState.jump && canJump) {
+                    velY = 11.0;
+                    canJump = false;
+                }
+            } else {
+                // Creative Flying
+                if (moveState.jump) camera.position.y += speed * delta;
+                if (moveState.shift) camera.position.y -= speed * delta;
+                velY = 0;
+            }
+
+            // Void Protection
+            if(camera.position.y < -20) camera.position.set(0, 10, 0);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+        window.onresize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+    </script>
+</body>
+</html>
