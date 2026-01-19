@@ -6,147 +6,140 @@
 
     <style>
 @font-face {
-	font-family: "CPCompanyFlashBig";
-	src: url("VP Pixel Standard.ttf");
+    font-family: "CPCompanyFlashBig";
+    src: url("VP Pixel Standard.ttf");
 }
 
 body {
-	background-color: white;
-	margin: 20px;
-	height: 100vh;
-	font-family: Arial, sans-serif;
+    background-color: white;
+    margin: 20px;
+    height: 100vh;
+    font-family: Arial, sans-serif;
 }
 
 /* Desktop Icon Buttons */
 .win-button {
-	background: transparent;
-	border: 1px solid transparent;
-	cursor: pointer;
-	display: inline-flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 5px;
-	margin: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    margin: 10px;
 }
 
 .win-button.selected {
-	border: 1px dashed #000;
+    border: 1px dashed #000;
 }
 
 .button-label {
-	margin-top: 5px;
+    margin-top: 5px;
 }
 
 .windows-style {
-	font-family: "CPCompanyFlashBig", Arial, sans-serif;
-	font-size: 12px;
-	text-align: center;
-	color: black;
-	white-space: nowrap;
-	padding: 1px 3px;
+    font-family: "CPCompanyFlashBig", Arial, sans-serif;
+    font-size: 12px;
+    text-align: center;
+    color: black;
+    white-space: nowrap;
+    padding: 1px 3px;
 }
 
 .win-button.selected .button-label {
-	background-color: #000080;
-	color: white;
+    background-color: #000080;
+    color: white;
 }
 
 /* Popup Window */
 .popup {
-	display: none;
-	/* Changed for demonstration purposes */
-	position: absolute;
-	background-color: #FFF;
-	width: auto;
-	max-width: 95vw;
-	height: 400px;
-	/* Important for scrollable area */
-	overflow: auto;
-	/* Enables scrolling for the content */
-	box-sizing: border-box;
-	border-top: 1px solid #FFF;
-	border-left: 1px solid #FFF;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;
-	padding: 2px;
+    display: none;
+    position: absolute;
+    background-color: #FFF;
+    width: auto;
+    max-width: 95vw;
+    height: 400px;
+    overflow: auto;
+    box-sizing: border-box;
+    border-top: 1px solid #FFF;
+    border-left: 1px solid #FFF;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    padding: 2px;
 }
 
 .popup::before {
-	content: '';
-	position: absolute;
-	top: 1px;
-	left: 1px;
-	right: 1px;
-	bottom: 1px;
-	border-top: 1px solid #808080;
-	border-left: 1px solid #808080;
-	border-right: 1px solid #FFF;
-	border-bottom: 1px solid #FFF;
-	pointer-events: none;
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #FFF;
+    border-bottom: 1px solid #FFF;
+    pointer-events: none;
 }
 
 .popupheader {
-	padding: 3px 5px;
-	background-color: #000080;
-	color: white;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	font-size: 12px;
-	font-weight: bold;
-	cursor: grab;
-	text-transform: uppercase;
-	/* Added styles below */
-	position: sticky;
-	/* Makes the header stick to the top */
-	top: 0;
-	/* Sticks it to the top edge of the scrolling container */
-	z-index: 10;
-	/* Ensures it stays above other scrolling content */
+    padding: 3px 5px;
+    background-color: #000080;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: grab;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-
 .window-controls {
-	display: flex;
-	gap: 4px;
+    display: flex;
+    gap: 4px;
 }
 
 .window-controls span {
-	cursor: pointer;
-	background-color: #C0C0C0;
-	color: black;
-	border-top: 1px solid #FFF;
-	border-left: 1px solid #FFF;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;
-	padding: 0px 4px;
-	font-size: 12px;
+    cursor: pointer;
+    background-color: #C0C0C0;
+    color: black;
+    border-top: 1px solid #FFF;
+    border-left: 1px solid #FFF;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    padding: 0px 4px;
+    font-size: 12px;
 }
 
 /* Drag Outline */
 .dragging-outline {
-	position: absolute;
-	background-image: repeating-conic-gradient(#C0C0C0 0% 25%, transparent 0% 50%);
-	background-size: 4px 4px;
-	border: 1px solid #000;
-	z-index: 9999;
-	pointer-events: none;
-	opacity: 0.8;
+    position: absolute;
+    background-image: repeating-conic-gradient(#C0C0C0 0% 25%, transparent 0% 50%);
+    background-size: 4px 4px;
+    border: 1px solid #000;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.8;
 }
 
 /* Invisible Resize Handle */
 .popup-resize {
-	position: absolute;
-	width: 12px;
-	height: 12px;
-	right: 0;
-	bottom: 0;
-	cursor: se-resize;
-	background: transparent;
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+    background: transparent;
 }
+
 .popupcontent {
     width: 100%;
-    height: calc(100% - 30px); /* subtract header height */
+    height: calc(100% - 30px);
     display: flex;
 }
 
@@ -162,17 +155,241 @@ body {
     height: 100%;
     display: block;
 }
-		 #content {
-			 display: none;
-		 }
+
+#content {
+    display: none;
+}
+
+/* ============================
+   CRT EMULATOR STYLES (POPUP5)
+   ============================ */
+
+.idle-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 200;
+}
+
+/* Desk surface */
+#popup5 .desk {
+    width: 100%;
+    height: 120px;
+    background: #5a4633;
+    box-shadow: inset 0 8px 20px rgba(0,0,0,0.4);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -10;
+}
+
+/* CRT monitor shell */
+#popup5 .crt-monitor {
+    background: #d9d4c8;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow:
+        0 0 0 4px #b8b2a6 inset,
+        0 0 0 8px #e8e4da inset,
+        0 0 40px rgba(0,0,0,0.7);
+    position: relative;
+    margin: 0 auto;
+}
+
+/* Ventilation slits */
+#popup5 .vents {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 6px;
+    background: repeating-linear-gradient(
+        to right,
+        #a8a39a 0px,
+        #a8a39a 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    opacity: 0.6;
+}
+
+/* Power LED */
+#popup5 .power-light {
+    position: absolute;
+    bottom: 12px;
+    left: 30px;
+    width: 12px;
+    height: 12px;
+    background: #0f0;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #0f0;
+}
+
+/* Label under screen */
+#popup5 .brand-label {
+    position: absolute;
+    bottom: 8px;
+    right: 30px;
+    font-size: 14px;
+    color: #444;
+    font-family: "MS Sans Serif", sans-serif;
+    letter-spacing: 1px;
+}
+
+/* Screen bezel */
+#popup5 .screen-bezel {
+    background: #000;
+    padding: 12px;
+    border-radius: 4px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.8),
+        inset 0 0 30px rgba(0,0,0,0.5);
+}
+
+/* Cropped emulator screen */
+#popup5 .cropper {
+    width: 847px;
+    height: 463px;
+    overflow: hidden;
+    position: relative;
+    background: black;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+#popup5 .cropper iframe {
+    width: 1400px;
+    height: 1600px;
+    border: none;
+    position: absolute;
+    top: -230px;
+    left: -510px;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+#popup5 .cropper iframe::-webkit-scrollbar {
+    display: none;
+}
+
+/* Monitor base */
+#popup5 .monitor-base {
+    width: 420px;
+    height: 60px;
+    background: #d9d4c8;
+    margin: 0 auto;
+    margin-top: 10px;
+    border-radius: 6px;
+    box-shadow:
+        inset 0 0 0 3px #b8b2a6,
+        inset 0 0 0 6px #e8e4da,
+        0 6px 12px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+/* Base foot */
+#popup5 .monitor-foot {
+    width: 520px;
+    height: 30px;
+    background: #d9d4c8;
+    margin: 0 auto;
+    margin-top: 4px;
+    border-radius: 4px;
+    box-shadow:
+        inset 0 0 0 3px #b8b2a6,
+        inset 0 0 0 6px #e8e4da,
+        0 8px 16px rgba(0,0,0,0.5);
+}
+
+/* Desk Note */
+#popup5 .desk-note {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    width: 180px;
+    height: 50px;
+    background: #f7f2b8;
+    border: 2px solid #d6d19a;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transform-origin: bottom right;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    z-index: 50;
+}
+
+#popup5 .desk-note-inner {
+    font-family: "MS Sans Serif", sans-serif;
+    font-size: 7px;
+    color: #333;
+    text-align: left;
+    opacity: 100;
+    transition: opacity 0.3s ease;
+}
+
+/* Open state */
+#popup5 .desk-note.open {
+    transform: translateY(-260px) translateX(-120px) scale(1.8) rotateX(12deg) rotateY(-8deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    z-index: 999;
+    height: 120px;
+}
+
+#popup5 .desk-note.open .desk-note-inner {
+    opacity: 1;
+}
+
+/* Glow effect for the note */
+#popup5 .desk-note.glow {
+    box-shadow: 0 0 20px 6px rgba(255, 255, 120, 0.9), 0 0 40px rgba(255,255,150,0.6);
+    border-color: #fff7a0;
+    z-index: 1000;
+}
+
+/* Pointer arrow that appears when idle */
+#popup5 .note-pointer {
+    position: absolute;
+    right: 130px;
+    bottom: 100px;
+    font-size: 32px;
+    color: #fff7a0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0);
+    transition: opacity 0.4s ease;
+    animation: pointer-bounce 1.2s infinite ease-in-out;
+    z-index: 1200;
+}
+
+@keyframes pointer-bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* Show pointer when note glows */
+#popup5 .desk-note.glow + .note-pointer {
+    opacity: 1;
+}
     </style>
 </head>
 
 <body>
 
-	<button style="width: 100px; height: 50px;" onclick="toggleContent()">Enter</button>
-	<div id="content">
-		<!-- DESKTOP ICONS -->
+    <button style="width: 100px; height: 50px;" onclick="toggleContent()">Enter</button>
+
+    <!-- Global idle overlay for emulator -->
+    <div class="idle-overlay"></div>
+
+    <div id="content">
+        <!-- DESKTOP ICONS -->
     <button class="win-button" data-popup="popup1">
         <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
         <span class="button-label windows-style">Thesis</span>
@@ -213,12 +430,13 @@ body {
         </div>
         <div class="popup-resize"></div>
     </div>
-	<button class="win-button" data-popup="popup3">
+
+    <button class="win-button" data-popup="popup3">
         <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
         <span class="button-label windows-style">Impact</span>
     </button>
-	
-	<div id="popup3" class="popup">
+    
+    <div id="popup3" class="popup">
         <div class="popupheader">
             <span>Impact</span>
             <div class="window-controls">
@@ -282,16 +500,71 @@ body {
     </div>
     <div class="popup-resize"></div>
 </div>
-	</div>
+
+<button class="win-button" data-popup="popup5">
+    <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
+    <span class="button-label windows-style">The Experiment</span>
+</button>
+
+<div id="popup5" class="popup">
+    <div class="popupheader">
+        <span>The Experiment</span>
+        <div class="window-controls">
+            <span class="min-btn">_</span>
+            <span class="full-btn">□</span>
+            <span class="close-btn">&times;</span>
+        </div>
+    </div>
+    <div class="popupcontent" style="justify-content:center; align-items:flex-end; position:relative; overflow:hidden;">
+        <div>
+            <div class="crt-monitor">
+                <div class="vents"></div>
+
+                <div class="screen-bezel">
+                    <div class="cropper">
+                        <iframe 
+                            src="https://www.pcjs.org/software/pcx86/sys/windows/3.00/" 
+                            scrolling="no">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div class="power-light"></div>
+                <div class="brand-label">IBM VGA Display</div>
+            </div>
+
+            <div class="monitor-base"></div>
+            <div class="monitor-foot"></div>
+        </div>
+
+        <div class="desk"></div>
+
+        <!-- Desk Note -->
+        <div class="desk-note" onclick="toggleNote()">
+            <div class="desk-note-inner">
+                <strong>How to Use the Emulator</strong><br><br>
+                • Click inside the screen to activate controls.<br>
+                • Use your mouse to open apps in Program Manager.<br>
+                • Keyboard works normally once active.<br>
+                • If the emulator freezes, press Ctrl+Alt+Del.<br>
+                • Click outside the monitor to release your mouse.<br>
+                • Performance varies by browser and device.
+            </div>
+        </div>
+
+        <!-- Pointer -->
+        <div class="note-pointer">🡇</div>
+    </div>
+    <div class="popup-resize"></div>
+</div>
+    </div>
 
 <script>
 
-	function toggleContent() {
+    function toggleContent() {
     var content = document.getElementById("content");
-	 var body = document.getElementByTag("body");
     if (content.style.display === "none") {
         content.style.display = "block"; // Show content
-		  body.style.backgroundColor = "";
     } else {
         content.style.display = "none"; // Hide content
     }
@@ -462,42 +735,129 @@ function setupWindowControls(popup) {
     });
 
     // FULLSCREEN / RESTORE
-    fullBtn.addEventListener("click", () => {
-        if (!isFullscreen) {
-            prev = {
-                top: popup.offsetTop,
-                left: popup.offsetLeft,
-                width: popup.offsetWidth,
-                height: popup.offsetHeight
-            };
+    // FULLSCREEN / RESTORE
+fullBtn.addEventListener("click", () => {
+    if (!isFullscreen) {
+        prev = {
+            top: popup.offsetTop,
+            left: popup.offsetLeft,
+            width: popup.offsetWidth,
+            height: popup.offsetHeight
+        };
 
-            popup.style.top = "0px";
-            popup.style.left = "0px";
-            popup.style.width = "100vw";
-            popup.style.height = "100vh";
+        // True fullscreen
+        popup.style.position = "fixed";
+        popup.style.top = "0";
+        popup.style.left = "0";
+        popup.style.width = "100%";
+        popup.style.height = "100%";
+        popup.style.margin = "0";
+        popup.style.padding = "0";
 
-            isFullscreen = true;
-            fullBtn.textContent = "❐";
-        } else {
-            popup.style.top = prev.top + "px";
-            popup.style.left = prev.left + "px";
-            popup.style.width = prev.width + "px";
-            popup.style.height = prev.height + "px";
+        // Remove borders during fullscreen
+        popup.style.border = "none";
+        popup.style.boxSizing = "border-box";
 
-            isFullscreen = false;
-            fullBtn.textContent = "□";
-        }
+        // Hide the resize handle in fullscreen
+        const resizer = popup.querySelector(".popup-resize");
+        if (resizer) resizer.style.display = "none";
 
-        bringToFront(popup);
-    });
+        isFullscreen = true;
+        fullBtn.textContent = "❐";
+    } else {
+        // Restore previous size and position
+        popup.style.position = "absolute";
+        popup.style.top = prev.top + "px";
+        popup.style.left = prev.left + "px";
+        popup.style.width = prev.width + "px";
+        popup.style.height = prev.height + "px";
+
+        // Restore borders
+        popup.style.border = "";
+        popup.style.padding = "";
+        popup.style.margin = "";
+
+        // Restore resize handle
+        const resizer = popup.querySelector(".popup-resize");
+        if (resizer) resizer.style.display = "block";
+
+        isFullscreen = false;
+        fullBtn.textContent = "□";
+    }
+
+    bringToFront(popup);
+});
 
     // CLOSE
     closeBtn.addEventListener("click", () => {
         popup.style.display = "none";
     });
 }
-</script>
 
+/* ------------------------------
+   EMULATOR IDLE + NOTE LOGIC
+------------------------------ */
+
+/* Track if the note has been clicked */
+let noteClicked = false;
+
+function toggleNote() {
+    const note = document.querySelector('#popup5 .desk-note');
+    const overlay = document.querySelector('.idle-overlay');
+    if (!note) return;
+
+    note.classList.toggle('open');
+    noteClicked = true;
+    note.classList.remove("glow");
+    if (overlay) overlay.style.opacity = "0";
+}
+
+/* Idle Detection System */
+let idleTimer;
+const idleDelay = 10000; // 10 seconds
+const overlay = document.querySelector('.idle-overlay');
+const note = document.querySelector('#popup5 .desk-note');
+
+function resetIdle() {
+    if (!overlay || !note) return;
+
+    // If the user already clicked the note, disable idle system entirely
+    if (noteClicked) {
+        overlay.style.opacity = "0";
+        note.classList.remove("glow");
+        clearTimeout(idleTimer);
+        return;
+    }
+
+    overlay.style.opacity = "0";
+    note.classList.remove("glow");
+
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(goIdle, idleDelay);
+}
+
+function goIdle() {
+    if (!overlay || !note) return;
+
+    // If the note was clicked, never go idle again
+    if (noteClicked) {
+        overlay.style.opacity = "0";
+        note.classList.remove("glow");
+        return;
+    }
+
+    overlay.style.opacity = "1";
+    note.classList.add("glow");
+}
+
+/* Reset idle timer on any activity */
+['mousedown','touchstart'].forEach(evt => {
+    window.addEventListener(evt, resetIdle);
+});
+
+/* Start timer on load */
+resetIdle();
+</script>
 
 </body>
 </html>
