@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Windows 3.0 Style Desktop</title>
+
+    <style>
+@font-face {
+	font-family: "CPCompanyFlashBig";
+	src: url("VP Pixel Standard.ttf");
+}
+
+body {
+	background-color: white;
+	margin: 20px;
+	height: 100vh;
+	font-family: Arial, sans-serif;
+}
+
+/* Desktop Icon Buttons */
+.win-button {
+	background: transparent;
+	border: 1px solid transparent;
+	cursor: pointer;
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 5px;
+	margin: 10px;
+}
+
+.win-button.selected {
+	border: 1px dashed #000;
+}
+
+.button-label {
+	margin-top: 5px;
+}
+
+.windows-style {
+	font-family: "CPCompanyFlashBig", Arial, sans-serif;
+	font-size: 12px;
+	text-align: center;
+	color: black;
+	white-space: nowrap;
+	padding: 1px 3px;
+}
+
+.win-button.selected .button-label {
+	background-color: #000080;
+	color: white;
+}
+
+/* Popup Window */
+.popup {
+	display: none;
+	/* Changed for demonstration purposes */
+	position: absolute;
+	background-color: #FFF;
+	width: auto;
+	max-width: 95vw;
+	height: 400px;
+	/* Important for scrollable area */
+	overflow: auto;
+	/* Enables scrolling for the content */
+	box-sizing: border-box;
+	border-top: 1px solid #FFF;
+	border-left: 1px solid #FFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	padding: 2px;
+}
+
+.popup::before {
+	content: '';
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	bottom: 1px;
+	border-top: 1px solid #808080;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #FFF;
+	border-bottom: 1px solid #FFF;
+	pointer-events: none;
+}
+
+.popupheader {
+	padding: 3px 5px;
+	background-color: #000080;
+	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 12px;
+	font-weight: bold;
+	cursor: grab;
+	text-transform: uppercase;
+	/* Added styles below */
+	position: sticky;
+	/* Makes the header stick to the top */
+	top: 0;
+	/* Sticks it to the top edge of the scrolling container */
+	z-index: 10;
+	/* Ensures it stays above other scrolling content */
+}
+
+
+.window-controls {
+	display: flex;
+	gap: 4px;
+}
+
+.window-controls span {
+	cursor: pointer;
+	background-color: #C0C0C0;
+	color: black;
+	border-top: 1px solid #FFF;
+	border-left: 1px solid #FFF;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+	padding: 0px 4px;
+	font-size: 12px;
+}
+
+/* Drag Outline */
+.dragging-outline {
+	position: absolute;
+	background-image: repeating-conic-gradient(#C0C0C0 0% 25%, transparent 0% 50%);
+	background-size: 4px 4px;
+	border: 1px solid #000;
+	z-index: 9999;
+	pointer-events: none;
+	opacity: 0.8;
+}
+
+/* Invisible Resize Handle */
+.popup-resize {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	right: 0;
+	bottom: 0;
+	cursor: se-resize;
+	background: transparent;
+}
+.popupcontent {
+    width: 100%;
+    height: calc(100% - 30px); /* subtract header height */
+    display: flex;
+}
+
+.pdf-container {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.pdf-container object,
+.pdf-container iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+		 #content {
+			 display: none;
+		 }
+    </style>
+</head>
+
+<body>
+
+	<button style="width: 100px; height: 50px;" onclick="toggleContent()">Enter</button>
+	<div id="content">
+		<!-- DESKTOP ICONS -->
+    <button class="win-button" data-popup="popup1">
+        <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
+        <span class="button-label windows-style">Thesis</span>
+    </button>
+
+    <button class="win-button" data-popup="popup2">
+        <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
+        <span class="button-label windows-style">Background</span>
+    </button>
+
+    <!-- POPUP WINDOWS -->
+    <div id="popup1" class="popup">
+        <div class="popupheader">
+            <span>Thesis</span>
+            <div class="window-controls">
+                <span class="min-btn">_</span>
+                <span class="full-btn">□</span>
+                <span class="close-btn">&times;</span>
+            </div>
+        </div>
+        <div class="popupcontent">
+            <p>This is popup #1</p>
+        </div>
+        <div class="popup-resize"></div>
+    </div>
+
+    <div id="popup2" class="popup">
+        <div class="popupheader">
+            <span>Background</span>
+            <div class="window-controls">
+                <span class="min-btn">_</span>
+                <span class="full-btn">□</span>
+                <span class="close-btn">&times;</span>
+            </div>
+        </div>
+        <div class="popupcontent">
+            <p>Windows 3.0 greatly impacted the computer industry. In this paper, I will talk about what happened before, and what led up to the creation of Windows 3.0 and how it got started. Windows 3.0 was created because Bill Gates wanted to make Windows a commercially successful and user-friendly operating system by finally adding reliable multitasking and improving the user interface (White, 2023). Previous versions of Windows had been disappointing, but Windows 3.0 was an important step forward that was technologically ready for the market (UMA Technology, 2020). Before Windows 3.0, Microsoft released Windows 1.0 in 1985 and Windows 2.0 in 1987. These versions were simple graphical layers that sat on top of MS-DOS (Microsoft Disk Operating System). They didn’t do much and were slow. People who used computers thought they felt clunky, and many programmers didn’t want to make software for them (White, 2023). Apple’s Macintosh looked nicer and felt easier to use, so Windows wasn’t the favorite yet (The Register, 2025). In the 1980s, computer parts got a lot better. New Intel chips like the 80286 and 80386 let computers use more memory and do more things at once. Microsoft noticed this and realized they could finally make Windows run well (UMA Technology, 2020). Windows 3.0, released in May 1990, was built to take advantage of these faster processors and better memory handling. That meant programs could run smoother and computers could handle more tasks without slowing down (The Register, 2025). One big change in Windows 3.0 was how it looked and felt. The screen had cleaner icons, groups for programs, and a file manager that made finding stuff easier (UMA Technology, 2020). Windows 3.0 also started using virtual memory, which helped programs run even if the computer didn’t have tons of RAM (White, 2023). It could run old MS-DOS programs in separate windows, so people got a real sense of multitasking for the first time (UMA Technology, 2020). Windows 3.0 became popular not just because it worked better but because Microsoft teamed up with computer makers, hardware companies bundled Windows with new PCs, so many people got it by default when they bought a machine (The Register, 2025). Software developers started writing programs specifically for Windows, which made the system more useful and attracted even more users (White, 2023). This growing set of apps and preinstalled systems helped Windows 3.0 spread quickly. Windows 3.0 changed how people used personal computers. It matched new hardware, looked more user-friendly, and finally let users run multiple things at once easily (UMA Technology, 2020). Those improvements won over both businesses and regular users. The success of Windows 3.0 set up Microsoft to keep improving Windows and become one of the biggest names in software (White, 2023).</p>
+        </div>
+        <div class="popup-resize"></div>
+    </div>
+	<button class="win-button" data-popup="popup3">
+        <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
+        <span class="button-label windows-style">Impact</span>
+    </button>
+	
+	<div id="popup3" class="popup">
+        <div class="popupheader">
+            <span>Impact</span>
+            <div class="window-controls">
+                <span class="min-btn">_</span>
+                <span class="full-btn">□</span>
+                <span class="close-btn">&times;</span>
+            </div>
+        </div>
+        <div class="popupcontent">
+            <article>
+    <h2>Introduction</h2>
+    <p>On May 22, 1990, Microsoft released Windows 3.0, a major milestone in computing history (Gralla). Earlier versions struggled, but Windows 3.0 became the first commercially successful graphical user interface (GUI) for IBM-compatible PCs. It reshaped how people interacted with computers and launched Microsoft into software dominance.</p>
+
+    <h2>Short-Term Impact</h2>
+    <p>Before Windows 3.0, most PCs ran on MS-DOS, a command-line system that uses commands to navigate the computer. Windows 3.0 introduced a colorful, icon-based GUI that let users manage files and run programs with a mouse, making computers more accessible (UMA Technology). It sold over 10 million copies in two years, helping Microsoft surpass IBM and Apple (Gralla). Developers quickly built Windows-compatible apps, boosting adoption. Features like Program Manager and VGA graphics made it user-friendly. Bundled apps like Solitaire helped users learn the interface (UMA Technology).</p>
+
+    <h2>Reactions and Perspectives</h2>
+    <p>Casual users liked and embraced the simplicity, while developers saw new opportunities. Some tech enthusiasts preferred command-line control and criticized GUIs. Apple accused Microsoft of copying its interface, sparking debates about innovation.</p>
+
+    <h2>Long-Term Impact</h2>
+    <p>Windows 3.0 set the stage for Microsoft’s dominance and made GUIs standard (Gralla). It paved the way for Windows 95 and future versions. It also encouraged hardware makers to build Windows-optimized PCs, making computing more widespread.</p>
+
+    <h2>Impact on Different Groups</h2>
+    <p>Students gained access to educational software. Office workers used productivity tools. Families explored games and creativity. Developers thrived in the growing Windows ecosystem. However, early GUIs lacked accessibility features.</p>
+
+    <h2>Conclusion</h2>
+    <p>Windows 3.0 influenced later operating systems and helped normalize computing. Its GUI model inspired mobile and cloud tools. As someone interested in computing history, I see Windows 3.0 as that shaped the modular, visual interfaces we rely on today.</p>
+
+    <h2>Key Terms</h2>
+    <ul>
+        <li><strong>GUI:</strong> A type of interface that uses icons to tell the user what does what instead of having to rely on the user knowing commands to operate the computer.</li>
+        <li><strong>VGA:</strong> Video Graphics Array is an interface and connector that sends a video signal from the computer to a monitor (screen).</li>
+    </ul>
+</article>
+        </div>
+        <div class="popup-resize"></div>
+    </div>
+
+<button class="win-button" data-popup="popup4">
+    <img src="ThesisIcon.png" style="width:50px;height:50px;image-rendering:pixelated;">
+    <span class="button-label windows-style">Process Paper</span>
+</button>
+
+<div id="popup4" class="popup">
+    <div class="popupheader">
+        <span>Process Paper</span>
+        <div class="window-controls">
+            <span class="min-btn">_</span>
+            <span class="full-btn">□</span>
+            <span class="close-btn">&times;</span>
+        </div>
+    </div>
+    <div class="popupcontent">
+        <div class="pdf-container">
+            <object data="NHD Process Paper.pdf#zoom=100" type="application/pdf" width="100%" height="100%">
+                <iframe src="NHD Process Paper.pdf#toolbar=0&navpanes=0&zoom=100" width="100%" height="100%" style="border: none;">
+                    <p>Your browser does not support PDFs. You can <a href="NHD Process Paper.pdf#zoom=100">download the PDF</a> instead.</p>
+                </iframe>
+            </object>
+        </div>
+    </div>
+    <div class="popup-resize"></div>
+</div>
+	</div>
+
+<script>
+
+	function toggleContent() {
+    var content = document.getElementById("content");
+	 var body = document.getElementByTag("body");
+    if (content.style.display === "none") {
+        content.style.display = "block"; // Show content
+		  body.style.backgroundColor = "";
+    } else {
+        content.style.display = "none"; // Hide content
+    }
+}
+/* ------------------------------
+   WINDOW STACKING (BRING TO FRONT)
+------------------------------ */
+let zIndexCounter = 10;
+
+function bringToFront(el) {
+    zIndexCounter++;
+    el.style.zIndex = zIndexCounter;
+}
+
+/* ------------------------------
+   ICON + POPUP LOGIC
+------------------------------ */
+document.querySelectorAll(".win-button").forEach(button => {
+    const popupId = button.dataset.popup;
+    const popup = document.getElementById(popupId);
+
+    // SINGLE CLICK: select
+    button.addEventListener("click", e => {
+        e.stopPropagation();
+        document.querySelectorAll(".win-button").forEach(b => b.classList.remove("selected"));
+        button.classList.add("selected");
+    });
+
+    // DOUBLE CLICK: open popup
+    button.addEventListener("dblclick", () => {
+        popup.style.display = "block";
+
+        // Force layout so offsetWidth/Height are correct
+        popup.getBoundingClientRect();
+
+        // Fix PDF not loading
+        const pdf = popup.querySelector("object");
+        if (pdf) {
+            const src = pdf.getAttribute("data");
+            pdf.setAttribute("data", src);
+        }
+
+        // Center window
+        const top = (window.innerHeight - popup.offsetHeight) / 2;
+        const left = (window.innerWidth - popup.offsetWidth) / 2;
+
+        popup.style.top = `${Math.max(0, top)}px`;
+        popup.style.left = `${Math.max(0, left)}px`;
+
+        bringToFront(popup);
+        dragElement(popup);
+        makeResizable(popup);
+        setupWindowControls(popup);
+    });
+
+    // CLICKING WINDOW BRINGS TO FRONT
+    popup.addEventListener("mousedown", () => bringToFront(popup));
+});
+
+// CLICK AWAY: deselect icons
+document.addEventListener("click", () => {
+    document.querySelectorAll(".win-button").forEach(b => b.classList.remove("selected"));
+});
+
+/* ------------------------------
+   DRAGGING LOGIC
+------------------------------ */
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let outlineElm = null;
+    const header = elmnt.querySelector(".popupheader");
+
+    header.onmousedown = function(e) {
+        e.preventDefault();
+        bringToFront(elmnt);
+
+        outlineElm = document.createElement("div");
+        outlineElm.classList.add("dragging-outline");
+        outlineElm.style.width = elmnt.offsetWidth + "px";
+        outlineElm.style.height = elmnt.offsetHeight + "px";
+        outlineElm.style.top = elmnt.offsetTop + "px";
+        outlineElm.style.left = elmnt.offsetLeft + "px";
+        document.body.appendChild(outlineElm);
+
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        document.onmouseup = function() {
+            if (outlineElm) {
+                elmnt.style.top = outlineElm.style.top;
+                elmnt.style.left = outlineElm.style.left;
+                outlineElm.remove();
+                outlineElm = null;
+            }
+            document.onmouseup = null;
+            document.onmousemove = null;
+        };
+
+        document.onmousemove = function(e) {
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            if (outlineElm) {
+                let newTop = outlineElm.offsetTop - pos2;
+                let newLeft = outlineElm.offsetLeft - pos1;
+
+                newTop = Math.max(0, newTop);
+                newLeft = Math.max(0, newLeft);
+
+                newTop = Math.min(window.innerHeight - outlineElm.offsetHeight, newTop);
+                newLeft = Math.min(window.innerWidth - outlineElm.offsetWidth, newLeft);
+
+                outlineElm.style.top = newTop + "px";
+                outlineElm.style.left = newLeft + "px";
+            }
+        };
+    };
+}
+
+/* ------------------------------
+   RESIZING LOGIC
+------------------------------ */
+function makeResizable(popup) {
+    const resizer = popup.querySelector(".popup-resize");
+
+    let startX, startY, startW, startH;
+
+    resizer.addEventListener("mousedown", e => {
+        e.preventDefault();
+        bringToFront(popup);
+
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = parseInt(getComputedStyle(popup).width, 10);
+        startH = parseInt(getComputedStyle(popup).height, 10);
+
+        document.addEventListener("mousemove", resizeDrag);
+        document.addEventListener("mouseup", stopResize);
+    });
+
+    function resizeDrag(e) {
+        popup.style.width = startW + (e.clientX - startX) + "px";
+        popup.style.height = startH + (e.clientY - startY) + "px";
+    }
+
+    function stopResize() {
+        document.removeEventListener("mousemove", resizeDrag);
+        document.removeEventListener("mouseup", stopResize);
+    }
+}
+
+/* ------------------------------
+   MINIMIZE + FULLSCREEN LOGIC
+------------------------------ */
+function setupWindowControls(popup) {
+    const minBtn = popup.querySelector(".min-btn");
+    const fullBtn = popup.querySelector(".full-btn");
+    const closeBtn = popup.querySelector(".close-btn");
+
+    let isFullscreen = false;
+    let prev = { top: 0, left: 0, width: 0, height: 0 };
+
+    // MINIMIZE
+    minBtn.addEventListener("click", () => {
+        popup.style.display = "none";
+    });
+
+    // FULLSCREEN / RESTORE
+    fullBtn.addEventListener("click", () => {
+        if (!isFullscreen) {
+            prev = {
+                top: popup.offsetTop,
+                left: popup.offsetLeft,
+                width: popup.offsetWidth,
+                height: popup.offsetHeight
+            };
+
+            popup.style.top = "0px";
+            popup.style.left = "0px";
+            popup.style.width = "100vw";
+            popup.style.height = "100vh";
+
+            isFullscreen = true;
+            fullBtn.textContent = "❐";
+        } else {
+            popup.style.top = prev.top + "px";
+            popup.style.left = prev.left + "px";
+            popup.style.width = prev.width + "px";
+            popup.style.height = prev.height + "px";
+
+            isFullscreen = false;
+            fullBtn.textContent = "□";
+        }
+
+        bringToFront(popup);
+    });
+
+    // CLOSE
+    closeBtn.addEventListener("click", () => {
+        popup.style.display = "none";
+    });
+}
+</script>
+
+
+</body>
+</html>
